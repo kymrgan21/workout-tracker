@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1a3a3a">
+  <title>Tiki Tracker</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(180deg, #1a3a3a 0%, #0f2626 100%);
+      min-height: 100vh;
+      color: #e8dcc8;
+      padding: 16px;
+      padding-top: env(safe-area-inset-top, 16px);
+      line-height: 1.5;
+    }
+
+    /* --- HEADER --- */
+    .app-header {
+      text-align: center;
+      margin-bottom: 24px;
+      padding: 16px 0;
+    }
+
+    .tiki-logo {
+      font-size: 48px;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .app-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #f4a942;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      letter-spacing: 1px;
+    }
+
+    .app-subtitle {
+      font-size: 0.8rem;
+      color: #8fbfb0;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 2px;
+    }
+    /* --- SETTINGS BAR --- */
+    .settings-bar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 16px;
+      gap: 8px;
+    }
+
+    .unit-toggle {
+      background: #2a4a4a;
+      border: 1px solid #3d6b5e;
+      border-radius: 20px;
+      padding: 4px;
+      display: flex;
+      gap: 2px;
+    }
+
+    .unit-btn {
+      background: none;
+      border: none;
+      color: #8fbfb0;
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .unit-btn.active {
+      background: #f4a942;
+      color: #1a3a3a;
+    }
+
+    /* --- DAY CARDS (Plan View) --- */
+    .plan-view, .day-view { display: none; }
+    .plan-view.active, .day-view.active { display: block; }
+
+    .day-card {
+      background: #2a4a4a;
+      border: 1px solid #3d6b5e;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .day-card:hover, .day-card:active {
+      border-color: #f4a942;
+      background: #2f5252;
+      transform: scale(1.01);
+    }
+
+    .day-card-left .day-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #f4e8d0;
+    }
+
+    .day-card-left .workout-name {
+      font-size: 0.8rem;
+      color: #8fbfb0;
+      margin-top: 2px;
+    }
+
+    .day-card-right {
+      text-align: right;
+    }
+
+    .exercise-count {
+      font-size: 0.75rem;
+      color: #f4a942;
+      font-weight: 600;
+    }
+
+    .day-card-arrow {
+      color: #5a8a7a;
+      font-size: 1.2rem;
+      margin-left: 12px;
+    }
+
+    /* --- DAY VIEW --- */
+    .day-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: #f4a942;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .back-btn:active { opacity: 0.7; }
+
+    .day-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #f4e8d0;
+    }
+
+    .workout-name-input {
+      width: 100%;
+      background: #2a4a4a;
+      border: 1px solid #3d6b5e;
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #f4e8d0;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      -webkit-appearance: none;
+    }
+
+    .workout-name-input:focus {
+      outline: none;
+      border-color: #f4a942;
+    }
+
+    .workout-name-input::placeholder { color: #5a8a7a; }
+
+    /* --- EXERCISE ROWS --- */
+    .exercise-item {
+      background: #2a4a4a;
+      border: 1px solid #3d6b5e;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .exercise-item.expanded { border-color: #f4a942; }
+
+    .exercise-header {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      gap: 10px;
+    }
+
+    .exercise-toggle {
+      color: #f4a942;
+      font-size: 0.8rem;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    .exercise-item.expanded .exercise-toggle {
+      transform: rotate(90deg);
+    }
+
+    .exercise-name-display {
+      flex: 1;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #f4e8d0;
+    }
+
+    .exercise-meta {
+      font-size: 0.8rem;
+      color: #8fbfb0;
+      font-weight: 500;
+    }
+
+    .exercise-actions {
+      display: flex;
+      gap: 8px;
+      margin-left: 8px;
+    }
+
+    .exercise-actions button {
+      background: none;
+      border: none;
+      color: #5a8a7a;
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .exercise-actions button:hover { color: #f4a942; }
+    .exercise-actions .delete-btn:hover { color: #e05050; }
+
+    /* --- EXPANDED CONTENT (Weekly Log) --- */
+    .exercise-body {
+      display: none;
+      padding: 0 16px 16px;
+    }
+
+    .exercise-item.expanded .exercise-body { display: block; }
+
+    .week-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+
+    .week-table th {
+      text-align: center;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #5a8a7a;
+      padding: 6px 4px;
+      border-bottom: 1px solid #3d6b5e;
+    }
+
+    .week-table th:first-child { text-align: left; }
+
+    .week-table td {
+      padding: 8px 4px;
+      text-align: center;
+      font-size: 0.85rem;
+      border-bottom: 1px solid #2a4a4a;
+    }
+
+    .week-table td:first-child {
+      text-align: left;
+      color: #8fbfb0;
+      font-weight: 500;
+      font-size: 0.8rem;
+    }
+
+    .week-table input {
+      width: 100%;
+      max-width: 60px;
+      background: #1a3a3a;
+      border: 1px solid #3d6b5e;
+      border-radius: 6px;
+      padding: 6px 4px;
+      color: #f4e8d0;
+      font-size: 0.85rem;
+      text-align: center;
+      -webkit-appearance: none;
+    }
+
+    .week-table input:focus {
+      outline: none;
+      border-color: #f4a942;
+    }
+
+    .log-week-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #f4a942, #e0872a);
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      color: #1a3a3a;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 12px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .log-week-btn:active { opacity: 0.8; }
+
+    /* --- ADD EXERCISE BUTTON --- */
+    .add-exercise-btn {
+      width: 100%;
+      background: #1a3a3a;
+      border: 2px dashed #3d6b5e;
+      border-radius: 10px;
+      padding: 14px;
+      color: #8fbfb0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.2s;
+    }
+
+    .add-exercise-btn:active {
+      border-color: #f4a942;
+      color: #f4a942;
+    }
+
+    /* --- EDIT MODAL --- */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal {
+      background: #2a4a4a;
+      border: 1px solid #3d6b5e;
+      border-radius: 14px;
+      padding: 24px;
+      width: 100%;
+      max-width: 340px;
+    }
+
+    .modal h3 {
+      color: #f4a942;
+      font-size: 1rem;
+      margin-bottom: 16px;
+    }
+
+    .modal-field {
+      margin-bottom: 14px;
+    }
+
+    .modal-field label {
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #8fbfb0;
+      margin-bottom: 4px;
+    }
+
+    .modal-field input {
+      width: 100%;
+      background: #1a3a3a;
+      border: 1px solid #3d6b5e;
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #f4e8d0;
+      font-size: 1rem;
+      -webkit-appearance: none;
+    }
+
+    .modal-field input:focus {
+      outline: none;
+      border-color: #f4a942;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .modal-btn.cancel {
+      background: #1a3a3a;
+      color: #8fbfb0;
+      border: 1px solid #3d6b5e;
+    }
+
+    .modal-btn.save {
+      background: linear-gradient(135deg, #f4a942, #e0872a);
+      color: #1a3a3a;
+    }
+
+    .modal-btn:active { opacity: 0.8; }
+
+    /* --- RESPONSIVE --- */
+    @media (max-width: 400px) {
+      body { padding: 10px; }
+      .app-title { font-size: 1.4rem; }
+      .week-table input { max-width: 50px; padding: 5px 2px; font-size: 0.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-header">
+  <svg class="tiki-logo" width="80" height="100" viewBox="0 0 80 100" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Wood grain gradient -->
+      <linearGradient id="woodMain" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#6B3A1F"/>
+        <stop offset="25%" stop-color="#8B5E3C"/>
+        <stop offset="50%" stop-color="#7A4B2A"/>
+        <stop offset="75%" stop-color="#9B6B42"/>
+        <stop offset="100%" stop-color="#6B3A1F"/>
+      </linearGradient>
+      <linearGradient id="woodDark" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#4A2510"/>
+        <stop offset="50%" stop-color="#5C3318"/>
+        <stop offset="100%" stop-color="#4A2510"/>
+      </linearGradient>
+      <linearGradient id="woodLight" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#A07040"/>
+        <stop offset="50%" stop-color="#B8864E"/>
+        <stop offset="100%" stop-color="#8B5E3C"/>
+      </linearGradient>
+      <linearGradient id="armGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#9B6B42"/>
+        <stop offset="100%" stop-color="#6B3A1F"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Tiki body / torso base -->
+    <path d="M25 58 L25 88 Q25 94 32 94 L48 94 Q55 94 55 88 L55 58 Z" fill="url(#woodMain)" stroke="#4A2510" stroke-width="0.8"/>
+    <!-- Torso carving lines -->
+    <path d="M32 62 L32 80" stroke="#4A2510" stroke-width="0.6" opacity="0.5"/>
+    <path d="M40 60 L40 90" stroke="#4A2510" stroke-width="0.5" opacity="0.4"/>
+    <path d="M48 62 L48 80" stroke="#4A2510" stroke-width="0.6" opacity="0.5"/>
+    <!-- Chest carving -->
+    <path d="M33 65 Q40 70 47 65" fill="none" stroke="#4A2510" stroke-width="1" opacity="0.6"/>
+    <path d="M35 72 Q40 75 45 72" fill="none" stroke="#4A2510" stroke-width="0.8" opacity="0.5"/>
+
+    <!-- Head -->
+    <path d="M22 10 Q22 4 30 3 L50 3 Q58 4 58 10 L58 50 Q58 56 50 57 L30 57 Q22 56 22 50 Z" fill="url(#woodMain)" stroke="#4A2510" stroke-width="1"/>
+
+    <!-- Brow ridge (heavy, traditional) -->
+    <path d="M24 18 Q28 13 40 13 Q52 13 56 18 L56 24 Q52 20 40 20 Q28 20 24 24 Z" fill="url(#woodDark)"/>
+    <!-- Brow ridge carving detail -->
+    <path d="M26 16 Q40 11 54 16" fill="none" stroke="#3A1A08" stroke-width="1.2"/>
+
+    <!-- Eye sockets (deep carved) -->
+    <ellipse cx="33" cy="28" rx="5.5" ry="6" fill="#2A1508"/>
+    <ellipse cx="47" cy="28" rx="5.5" ry="6" fill="#2A1508"/>
+    <!-- Eyes (glowing) -->
+    <ellipse cx="33" cy="28" rx="3.5" ry="4" fill="#f4a942"/>
+    <ellipse cx="47" cy="28" rx="3.5" ry="4" fill="#f4a942"/>
+    <!-- Eye inner glow -->
+    <ellipse cx="33" cy="27" rx="1.8" ry="2" fill="#ffe080" opacity="0.6"/>
+    <ellipse cx="47" cy="27" rx="1.8" ry="2" fill="#ffe080" opacity="0.6"/>
+
+    <!-- Nose (wide, carved) -->
+    <path d="M37 30 L35 38 Q36 40 40 40 Q44 40 45 38 L43 30" fill="url(#woodDark)" stroke="#3A1A08" stroke-width="0.6"/>
+    <!-- Nostrils -->
+    <circle cx="37" cy="38" r="1.5" fill="#2A1508"/>
+    <circle cx="43" cy="38" r="1.5" fill="#2A1508"/>
+
+    <!-- Mouth (wide grimace with teeth) -->
+    <path d="M28 44 Q30 42 40 42 Q50 42 52 44 L52 50 Q50 52 40 52 Q30 52 28 50 Z" fill="#2A1508" stroke="#3A1A08" stroke-width="0.8"/>
+    <!-- Teeth (blocky, carved style) -->
+    <rect x="30" y="44" width="4" height="5" rx="0.5" fill="#e8dcc8" stroke="#c4b49a" stroke-width="0.3"/>
+    <rect x="35" y="44" width="4" height="5" rx="0.5" fill="#e8dcc8" stroke="#c4b49a" stroke-width="0.3"/>
+    <rect x="40" y="44" width="4" height="5" rx="0.5" fill="#e8dcc8" stroke="#c4b49a" stroke-width="0.3"/>
+    <rect x="45" y="44" width="4" height="5" rx="0.5" fill="#e8dcc8" stroke="#c4b49a" stroke-width="0.3"/>
+    <!-- Lower teeth -->
+    <rect x="32" y="48" width="3.5" height="3" rx="0.5" fill="#d4c8b0" stroke="#c4b49a" stroke-width="0.3"/>
+    <rect x="37" y="48" width="3.5" height="3" rx="0.5" fill="#d4c8b0" stroke="#c4b49a" stroke-width="0.3"/>
+    <rect x="42" y="48" width="3.5" height="3" rx="0.5" fill="#d4c8b0" stroke="#c4b49a" stroke-width="0.3"/>
+
+    <!-- Head carving lines (wood grain / tribal marks) -->
+    <path d="M26 8 Q30 6 34 8" fill="none" stroke="#4A2510" stroke-width="0.7" opacity="0.6"/>
+    <path d="M46 8 Q50 6 54 8" fill="none" stroke="#4A2510" stroke-width="0.7" opacity="0.6"/>
+    <path d="M24 35 L26 32" stroke="#4A2510" stroke-width="0.7" opacity="0.5"/>
+    <path d="M56 35 L54 32" stroke="#4A2510" stroke-width="0.7" opacity="0.5"/>
+
+    <!-- Ear carvings -->
+    <path d="M22 25 Q19 30 22 35" fill="none" stroke="#4A2510" stroke-width="1.5"/>
+    <path d="M58 25 Q61 30 58 35" fill="none" stroke="#4A2510" stroke-width="1.5"/>
+
+    <!-- LEFT ARM (hanging down) -->
+    <path d="M25 60 Q20 62 18 70 Q16 78 18 82" fill="url(#armGrad)" stroke="#4A2510" stroke-width="0.8"/>
+    <!-- Left hand -->
+    <circle cx="18" cy="83" r="3" fill="url(#woodLight)" stroke="#4A2510" stroke-width="0.6"/>
+
+    <!-- RIGHT ARM (curling up - bicep flexed) -->
+    <!-- Upper arm -->
+    <path d="M55 60 Q62 58 65 52 Q67 48 65 42" fill="url(#armGrad)" stroke="#4A2510" stroke-width="0.8"/>
+    <!-- Bicep bulge -->
+    <ellipse cx="63" cy="50" rx="4" ry="6" fill="url(#woodLight)" stroke="#4A2510" stroke-width="0.6" opacity="0.7"/>
+    <!-- Forearm -->
+    <path d="M65 42 Q64 36 60 33 Q58 31 56 32" fill="url(#armGrad)" stroke="#4A2510" stroke-width="0.8"/>
+    <!-- Hand gripping bar -->
+    <circle cx="57" cy="32" r="3" fill="url(#woodLight)" stroke="#4A2510" stroke-width="0.6"/>
+
+    <!-- DUMBBELL -->
+    <!-- Bar -->
+    <rect x="48" y="31" width="18" height="2.5" rx="1.2" fill="#A0A0A0" stroke="#666" stroke-width="0.5"/>
+    <!-- Left plate -->
+    <rect x="46" y="27" width="4" height="10" rx="1.5" fill="#555" stroke="#333" stroke-width="0.5"/>
+    <rect x="44" y="28.5" width="3" height="7" rx="1" fill="#444" stroke="#333" stroke-width="0.4"/>
+    <!-- Right plate -->
+    <rect x="64" y="27" width="4" height="10" rx="1.5" fill="#555" stroke="#333" stroke-width="0.5"/>
+    <rect x="67" y="28.5" width="3" height="7" rx="1" fill="#444" stroke="#333" stroke-width="0.4"/>
+  </svg>
+  <span class="app-title">Tiki Tracker</span>
+  <div class="app-subtitle">Island Gains</div>
+</div>
+
+<!-- SETTINGS -->
+<div class="settings-bar">
+  <div class="unit-toggle">
+    <button class="unit-btn active" data-unit="lbs">lbs</button>
+    <button class="unit-btn" data-unit="kg">kg</button>
+  </div>
+</div>
+
+<!-- PLAN VIEW -->
+<div class="plan-view active" id="planView"></div>
+
+<!-- DAY VIEW -->
+<div class="day-view" id="dayView">
+  <div class="day-header">
+    <button class="back-btn" id="backBtn">&#8592;</button>
+    <div class="day-title" id="dayTitle">Monday</div>
+  </div>
+  <input type="text" class="workout-name-input" id="workoutNameInput" placeholder="Workout name (e.g. Push Day)">
+  <div id="exerciseList"></div>
+  <button class="add-exercise-btn" id="addExerciseBtn">+ Add Exercise</button>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <h3 id="modalTitle">Edit Exercise</h3>
+    <div class="modal-field">
+      <label>Exercise Name</label>
+      <input type="text" id="modalName" placeholder="e.g. Bicep Curl">
+    </div>
+    <div class="modal-field">
+      <label>Sets</label>
+      <input type="number" id="modalSets" value="3" min="1">
+    </div>
+    <div class="modal-field">
+      <label>Reps</label>
+      <input type="number" id="modalReps" value="12" min="1">
+    </div>
+    <div class="modal-buttons">
+      <button class="modal-btn cancel" id="modalCancel">Cancel</button>
+      <button class="modal-btn save" id="modalSave">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// --- DATA MODEL ---
+const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+let plan = loadPlan();
+let unit = localStorage.getItem('wt_unit') || 'lbs';
+let currentDay = null;
+let editingExerciseIdx = null;
+
+function loadPlan() {
+  const saved = localStorage.getItem('wt_plan');
+  if (saved) return JSON.parse(saved);
+  return DAYS.map(d => ({ day: d, workoutName: '', exercises: [] }));
+}
+
+function savePlan() {
+  localStorage.setItem('wt_plan', JSON.stringify(plan));
+}
+
+// --- UNIT TOGGLE ---
+document.querySelectorAll('.unit-btn').forEach(btn => {
+  if (btn.dataset.unit === unit) btn.classList.add('active');
+  else btn.classList.remove('active');
+  btn.addEventListener('click', () => {
+    unit = btn.dataset.unit;
+    localStorage.setItem('wt_unit', unit);
+    document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    if (currentDay !== null) renderDayView();
+  });
+});
+
+// --- PLAN VIEW ---
+function renderPlanView() {
+  const container = document.getElementById('planView');
+  container.innerHTML = plan.map((day, i) => {
+    const name = day.workoutName || 'Rest Day';
+    const count = day.exercises.length;
+    const countText = count === 0 ? '' : count + ' exercise' + (count > 1 ? 's' : '');
+    return `<div class="day-card" data-day="${i}">
+      <div class="day-card-left">
+        <div class="day-name">${day.day}</div>
+        <div class="workout-name">${name}</div>
+      </div>
+      <div class="day-card-right">
+        <div class="exercise-count">${countText}</div>
+      </div>
+      <span class="day-card-arrow">&#8250;</span>
+    </div>`;
+  }).join('');
+
+  container.querySelectorAll('.day-card').forEach(card => {
+    card.addEventListener('click', () => {
+      currentDay = parseInt(card.dataset.day);
+      showDayView();
+    });
+  });
+}
+
+// --- DAY VIEW ---
+function showDayView() {
+  document.getElementById('planView').classList.remove('active');
+  document.getElementById('dayView').classList.add('active');
+  renderDayView();
+}
+
+function showPlanView() {
+  document.getElementById('dayView').classList.remove('active');
+  document.getElementById('planView').classList.add('active');
+  currentDay = null;
+  renderPlanView();
+}
+
+function renderDayView() {
+  const day = plan[currentDay];
+  document.getElementById('dayTitle').textContent = day.day;
+  document.getElementById('workoutNameInput').value = day.workoutName;
+  renderExercises();
+}
+
+function renderExercises() {
+  const day = plan[currentDay];
+  const container = document.getElementById('exerciseList');
+  container.innerHTML = day.exercises.map((ex, i) => {
+    const weekRows = ex.weeks.map((w, wi) => {
+      return `<tr>
+        <td>Week ${wi + 1}</td>
+        <td><input type="number" value="${w.sets}" min="1" data-ex="${i}" data-week="${wi}" data-field="sets"></td>
+        <td><input type="number" value="${w.reps}" min="1" data-ex="${i}" data-week="${wi}" data-field="reps"></td>
+        <td><input type="number" value="${w.weight || ''}" min="0" placeholder="—" data-ex="${i}" data-week="${wi}" data-field="weight"></td>
+      </tr>`;
+    }).join('');
+
+    return `<div class="exercise-item" data-idx="${i}">
+      <div class="exercise-header">
+        <span class="exercise-toggle">&#9654;</span>
+        <span class="exercise-name-display">${ex.name}</span>
+        <span class="exercise-meta">${ex.sets}&times;${ex.reps}</span>
+        <div class="exercise-actions">
+          <button class="edit-btn" data-idx="${i}" title="Edit">&#9998;</button>
+          <button class="delete-btn" data-idx="${i}" title="Delete">&times;</button>
+        </div>
+      </div>
+      <div class="exercise-body">
+        <table class="week-table">
+          <thead><tr><th>Week</th><th>Sets</th><th>Reps</th><th>Weight (${unit})</th></tr></thead>
+          <tbody>${weekRows}</tbody>
+        </table>
+        <button class="log-week-btn" data-idx="${i}">+ Log This Week</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Toggle expand
+  container.querySelectorAll('.exercise-header').forEach(hdr => {
+    hdr.addEventListener('click', (e) => {
+      if (e.target.closest('.exercise-actions')) return;
+      const item = hdr.closest('.exercise-item');
+      item.classList.toggle('expanded');
+    });
+  });
+
+  // Edit buttons
+  container.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openEditModal(parseInt(btn.dataset.idx));
+    });
+  });
+
+  // Delete buttons
+  container.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(btn.dataset.idx);
+      if (confirm('Delete ' + day.exercises[idx].name + '?')) {
+        day.exercises.splice(idx, 1);
+        savePlan();
+        renderExercises();
+      }
+    });
+  });
+
+  // Log week buttons
+  container.querySelectorAll('.log-week-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx);
+      const ex = day.exercises[idx];
+      ex.weeks.push({ sets: ex.sets, reps: ex.reps, weight: '' });
+      savePlan();
+      renderExercises();
+      // Auto-expand the exercise
+      const items = container.querySelectorAll('.exercise-item');
+      items[idx].classList.add('expanded');
+    });
+  });
+
+  // Week data inputs
+  container.querySelectorAll('.week-table input').forEach(input => {
+    input.addEventListener('change', () => {
+      const exIdx = parseInt(input.dataset.ex);
+      const weekIdx = parseInt(input.dataset.week);
+      const field = input.dataset.field;
+      const val = input.value === '' ? '' : parseFloat(input.value);
+      day.exercises[exIdx].weeks[weekIdx][field] = val;
+      savePlan();
+    });
+  });
+}
+
+// --- WORKOUT NAME ---
+document.getElementById('workoutNameInput').addEventListener('input', (e) => {
+  plan[currentDay].workoutName = e.target.value;
+  savePlan();
+});
+
+// --- BACK BUTTON ---
+document.getElementById('backBtn').addEventListener('click', showPlanView);
+
+// --- ADD EXERCISE ---
+document.getElementById('addExerciseBtn').addEventListener('click', () => {
+  editingExerciseIdx = -1; // -1 means new
+  document.getElementById('modalTitle').textContent = 'New Exercise';
+  document.getElementById('modalName').value = '';
+  document.getElementById('modalSets').value = '3';
+  document.getElementById('modalReps').value = '12';
+  document.getElementById('editModal').classList.add('active');
+});
+
+// --- EDIT MODAL ---
+function openEditModal(idx) {
+  const ex = plan[currentDay].exercises[idx];
+  editingExerciseIdx = idx;
+  document.getElementById('modalTitle').textContent = 'Edit Exercise';
+  document.getElementById('modalName').value = ex.name;
+  document.getElementById('modalSets').value = ex.sets;
+  document.getElementById('modalReps').value = ex.reps;
+  document.getElementById('editModal').classList.add('active');
+}
+
+document.getElementById('modalCancel').addEventListener('click', () => {
+  document.getElementById('editModal').classList.remove('active');
+});
+
+document.getElementById('modalSave').addEventListener('click', () => {
+  const name = document.getElementById('modalName').value.trim();
+  const sets = parseInt(document.getElementById('modalSets').value) || 3;
+  const reps = parseInt(document.getElementById('modalReps').value) || 12;
+
+  if (!name) { alert('Enter an exercise name'); return; }
+
+  const day = plan[currentDay];
+
+  if (editingExerciseIdx === -1) {
+    // New exercise
+    day.exercises.push({
+      name: name,
+      sets: sets,
+      reps: reps,
+      weeks: [{ sets: sets, reps: reps, weight: '' }]
+    });
+  } else {
+    // Edit existing
+    const ex = day.exercises[editingExerciseIdx];
+    ex.name = name;
+    ex.sets = sets;
+    ex.reps = reps;
+  }
+
+  savePlan();
+  document.getElementById('editModal').classList.remove('active');
+  renderExercises();
+});
+
+// Close modal on overlay click
+document.getElementById('editModal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('editModal')) {
+    document.getElementById('editModal').classList.remove('active');
+  }
+});
+
+// --- INIT ---
+renderPlanView();
+
+// --- SERVICE WORKER ---
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+
+</body>
+</html>
