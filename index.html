@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#1a3a3a">
-  <title>Tiki Tracker</title>
+  <title>Kyle Fit</title>
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
   <style>
@@ -14,42 +14,95 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(180deg, #1a3a3a 0%, #0f2626 100%);
+      background: linear-gradient(180deg, #0f2626 0%, #1a3a3a 30%, #0d2020 100%);
       min-height: 100vh;
       color: #e8dcc8;
       padding: 16px;
       padding-top: env(safe-area-inset-top, 16px);
+      padding-bottom: 120px;
       line-height: 1.5;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* --- TROPICAL BACKGROUND DECORATIONS --- */
+    .bg-decor {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.12;
+    }
+
+    .bg-palm-left {
+      top: 60px;
+      left: -30px;
+    }
+
+    .bg-palm-right {
+      top: 40px;
+      right: -20px;
+      transform: scaleX(-1);
+    }
+
+    .bg-waves {
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      opacity: 0.08;
+    }
+
+    .bg-flower-1 {
+      top: 200px;
+      right: 10px;
+      opacity: 0.15;
+    }
+
+    .bg-flower-2 {
+      top: 500px;
+      left: 5px;
+      opacity: 0.12;
+    }
+
+    .bg-coconut {
+      bottom: 140px;
+      right: 15px;
+      opacity: 0.14;
+    }
+
+    /* Content above decorations */
+    .app-content {
+      position: relative;
+      z-index: 1;
     }
 
     /* --- HEADER --- */
     .app-header {
       text-align: center;
-      margin-bottom: 24px;
-      padding: 16px 0;
+      margin-bottom: 20px;
+      padding: 12px 0;
     }
 
     .tiki-logo {
-      font-size: 48px;
-      margin-bottom: 4px;
       display: block;
+      margin: 0 auto 8px;
     }
 
     .app-title {
-      font-size: 1.6rem;
+      font-size: 1.8rem;
       font-weight: 800;
       color: #f4a942;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-      letter-spacing: 1px;
+      text-shadow: 0 2px 8px rgba(244,169,66,0.3);
+      letter-spacing: 2px;
     }
 
     .app-subtitle {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: #8fbfb0;
       text-transform: uppercase;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
       margin-top: 2px;
     }
+
     /* --- SETTINGS BAR --- */
     .settings-bar {
       display: flex;
@@ -63,7 +116,7 @@
       background: #2a4a4a;
       border: 1px solid #3d6b5e;
       border-radius: 20px;
-      padding: 4px;
+      padding: 3px;
       display: flex;
       gap: 2px;
     }
@@ -72,9 +125,9 @@
       background: none;
       border: none;
       color: #8fbfb0;
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 16px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
@@ -85,15 +138,117 @@
       color: #1a3a3a;
     }
 
-    /* --- DAY CARDS (Plan View) --- */
-    .plan-view, .day-view { display: none; }
-    .plan-view.active, .day-view.active { display: block; }
+    /* --- VIEWS --- */
+    .view { display: none; }
+    .view.active { display: block; }
 
+    /* --- PLAN CARDS (Home) --- */
+    .plan-card {
+      background: linear-gradient(135deg, #2a4a4a 0%, #1f3f3f 100%);
+      border: 1px solid #3d6b5e;
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-tap-highlight-color: transparent;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .plan-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #f4a942, #e05050, #f4a942);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .plan-card:hover::before, .plan-card:active::before { opacity: 1; }
+
+    .plan-card:hover, .plan-card:active {
+      border-color: #f4a942;
+      transform: scale(1.01);
+    }
+
+    .plan-card-left .plan-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #f4e8d0;
+    }
+
+    .plan-card-left .plan-info {
+      font-size: 0.75rem;
+      color: #8fbfb0;
+      margin-top: 3px;
+    }
+
+    .plan-card-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .plan-card-icon {
+      font-size: 1.4rem;
+    }
+
+    .plan-card-arrow {
+      color: #5a8a7a;
+      font-size: 1.2rem;
+    }
+
+    .plan-actions {
+      display: flex;
+      gap: 6px;
+      margin-left: 8px;
+    }
+
+    .plan-actions button {
+      background: none;
+      border: none;
+      color: #5a8a7a;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 6px;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .plan-actions button:active { color: #f4a942; }
+    .plan-actions .delete-plan-btn:active { color: #e05050; }
+
+    .add-plan-btn {
+      width: 100%;
+      background: rgba(26,58,58,0.8);
+      border: 2px dashed #3d6b5e;
+      border-radius: 14px;
+      padding: 16px;
+      color: #8fbfb0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.2s;
+    }
+
+    .add-plan-btn:active {
+      border-color: #f4a942;
+      color: #f4a942;
+    }
+
+    /* --- DAY CARDS --- */
     .day-card {
-      background: #2a4a4a;
+      background: linear-gradient(135deg, #2a4a4a 0%, #1f3f3f 100%);
       border: 1px solid #3d6b5e;
       border-radius: 12px;
-      padding: 16px 20px;
+      padding: 14px 18px;
       margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
@@ -105,18 +260,18 @@
 
     .day-card:hover, .day-card:active {
       border-color: #f4a942;
-      background: #2f5252;
+      background: linear-gradient(135deg, #2f5252 0%, #264646 100%);
       transform: scale(1.01);
     }
 
     .day-card-left .day-name {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       color: #f4e8d0;
     }
 
     .day-card-left .workout-name {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: #8fbfb0;
       margin-top: 2px;
     }
@@ -126,23 +281,23 @@
     }
 
     .exercise-count {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: #f4a942;
       font-weight: 600;
     }
 
     .day-card-arrow {
       color: #5a8a7a;
-      font-size: 1.2rem;
-      margin-left: 12px;
+      font-size: 1.1rem;
+      margin-left: 10px;
     }
 
-    /* --- DAY VIEW --- */
-    .day-header {
+    /* --- NAVIGATION HEADER --- */
+    .nav-header {
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .back-btn {
@@ -158,17 +313,19 @@
 
     .back-btn:active { opacity: 0.7; }
 
-    .day-title {
-      font-size: 1.3rem;
+    .nav-title {
+      font-size: 1.2rem;
       font-weight: 700;
       color: #f4e8d0;
+      flex: 1;
     }
 
+    /* --- WORKOUT NAME INPUT --- */
     .workout-name-input {
       width: 100%;
       background: #2a4a4a;
       border: 1px solid #3d6b5e;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 12px 16px;
       color: #f4e8d0;
       font-size: 1rem;
@@ -186,7 +343,7 @@
 
     /* --- EXERCISE ROWS --- */
     .exercise-item {
-      background: #2a4a4a;
+      background: linear-gradient(135deg, #2a4a4a 0%, #243f3f 100%);
       border: 1px solid #3d6b5e;
       border-radius: 10px;
       margin-bottom: 10px;
@@ -218,13 +375,13 @@
 
     .exercise-name-display {
       flex: 1;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 600;
       color: #f4e8d0;
     }
 
     .exercise-meta {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: #8fbfb0;
       font-weight: 500;
     }
@@ -263,7 +420,7 @@
 
     .week-table th {
       text-align: center;
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       color: #5a8a7a;
@@ -276,26 +433,26 @@
     .week-table td {
       padding: 8px 4px;
       text-align: center;
-      font-size: 0.85rem;
-      border-bottom: 1px solid #2a4a4a;
+      font-size: 0.82rem;
+      border-bottom: 1px solid rgba(61,107,94,0.3);
     }
 
     .week-table td:first-child {
       text-align: left;
       color: #8fbfb0;
       font-weight: 500;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
     }
 
     .week-table input {
       width: 100%;
-      max-width: 60px;
+      max-width: 56px;
       background: #1a3a3a;
       border: 1px solid #3d6b5e;
       border-radius: 6px;
       padding: 6px 4px;
       color: #f4e8d0;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       text-align: center;
       -webkit-appearance: none;
     }
@@ -321,15 +478,15 @@
 
     .log-week-btn:active { opacity: 0.8; }
 
-    /* --- ADD EXERCISE BUTTON --- */
-    .add-exercise-btn {
+    /* --- ADD BUTTON (shared) --- */
+    .add-btn {
       width: 100%;
-      background: #1a3a3a;
+      background: rgba(26,58,58,0.6);
       border: 2px dashed #3d6b5e;
       border-radius: 10px;
       padding: 14px;
       color: #8fbfb0;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
       margin-top: 8px;
@@ -337,17 +494,17 @@
       transition: all 0.2s;
     }
 
-    .add-exercise-btn:active {
+    .add-btn:active {
       border-color: #f4a942;
       color: #f4a942;
     }
 
-    /* --- EDIT MODAL --- */
+    /* --- MODAL --- */
     .modal-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.7);
+      background: rgba(0,0,0,0.75);
       z-index: 1000;
       align-items: center;
       justify-content: center;
@@ -357,12 +514,13 @@
     .modal-overlay.active { display: flex; }
 
     .modal {
-      background: #2a4a4a;
+      background: linear-gradient(135deg, #2a4a4a, #1f3f3f);
       border: 1px solid #3d6b5e;
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 24px;
       width: 100%;
       max-width: 340px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     }
 
     .modal h3 {
@@ -408,7 +566,7 @@
 
     .modal-btn {
       flex: 1;
-      padding: 10px;
+      padding: 11px;
       border-radius: 8px;
       font-size: 0.9rem;
       font-weight: 600;
@@ -432,18 +590,88 @@
 
     /* --- RESPONSIVE --- */
     @media (max-width: 400px) {
-      body { padding: 10px; }
-      .app-title { font-size: 1.4rem; }
-      .week-table input { max-width: 50px; padding: 5px 2px; font-size: 0.8rem; }
+      body { padding: 10px; padding-bottom: 100px; }
+      .app-title { font-size: 1.5rem; }
+      .week-table input { max-width: 48px; padding: 5px 2px; font-size: 0.78rem; }
     }
   </style>
 </head>
 <body>
 
+<!-- TROPICAL BACKGROUND DECORATIONS -->
+<!-- Palm tree left -->
+<svg class="bg-decor bg-palm-left" width="140" height="280" viewBox="0 0 140 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M70 280 L70 120" stroke="#4a8a6a" stroke-width="8" stroke-linecap="round"/>
+  <path d="M70 120 Q30 100 5 60" stroke="#4a8a6a" stroke-width="4" fill="none"/>
+  <path d="M70 120 Q30 105 10 80 Q20 90 40 95 Q55 100 70 120" fill="#3d7a5a"/>
+  <path d="M70 120 Q50 90 15 70 Q30 80 50 88 Q60 95 70 120" fill="#2d6a4a"/>
+  <path d="M70 120 Q90 90 120 70 Q105 82 90 90 Q78 100 70 120" fill="#3d7a5a"/>
+  <path d="M70 120 Q100 100 130 85 Q110 92 95 98 Q80 108 70 120" fill="#2d6a4a"/>
+  <path d="M70 120 Q60 80 55 40 Q60 65 65 85 Q68 100 70 120" fill="#357050"/>
+  <path d="M70 120 Q85 75 95 35 Q85 65 80 90 Q75 105 70 120" fill="#2d6a4a"/>
+  <ellipse cx="70" cy="118" rx="4" ry="6" fill="#8B5E3C"/>
+  <ellipse cx="65" cy="115" rx="3" ry="4" fill="#6B4A2A"/>
+  <ellipse cx="76" cy="116" rx="3" ry="4" fill="#7A5233"/>
+</svg>
+
+<!-- Palm tree right -->
+<svg class="bg-decor bg-palm-right" width="120" height="240" viewBox="0 0 140 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M70 280 L70 130" stroke="#4a8a6a" stroke-width="7" stroke-linecap="round"/>
+  <path d="M70 130 Q30 105 10 80 Q20 90 40 95 Q55 105 70 130" fill="#3d7a5a"/>
+  <path d="M70 130 Q50 95 15 75 Q35 85 50 92 Q62 102 70 130" fill="#2d6a4a"/>
+  <path d="M70 130 Q90 95 125 75 Q105 87 92 95 Q78 108 70 130" fill="#3d7a5a"/>
+  <path d="M70 130 Q100 105 130 90 Q110 98 95 104 Q80 115 70 130" fill="#2d6a4a"/>
+  <path d="M70 130 Q62 85 58 45 Q63 72 66 95 Q68 110 70 130" fill="#357050"/>
+</svg>
+
+<!-- Waves at bottom -->
+<svg class="bg-decor bg-waves" width="100%" height="120" viewBox="0 0 400 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0 60 Q50 30 100 60 Q150 90 200 60 Q250 30 300 60 Q350 90 400 60 L400 120 L0 120 Z" fill="#1a5a6a"/>
+  <path d="M0 75 Q50 50 100 75 Q150 100 200 75 Q250 50 300 75 Q350 100 400 75 L400 120 L0 120 Z" fill="#145060"/>
+  <path d="M0 90 Q50 70 100 90 Q150 110 200 90 Q250 70 300 90 Q350 110 400 90 L400 120 L0 120 Z" fill="#0f4050"/>
+</svg>
+
+<!-- Hibiscus flower top right -->
+<svg class="bg-decor bg-flower-1" width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="30" cy="18" rx="8" ry="14" fill="#e05070" transform="rotate(0 30 30)"/>
+  <ellipse cx="30" cy="18" rx="8" ry="14" fill="#d04060" transform="rotate(72 30 30)"/>
+  <ellipse cx="30" cy="18" rx="8" ry="14" fill="#e05070" transform="rotate(144 30 30)"/>
+  <ellipse cx="30" cy="18" rx="8" ry="14" fill="#d04060" transform="rotate(216 30 30)"/>
+  <ellipse cx="30" cy="18" rx="8" ry="14" fill="#e05070" transform="rotate(288 30 30)"/>
+  <circle cx="30" cy="30" r="6" fill="#f4a942"/>
+  <circle cx="30" cy="30" r="3" fill="#e0872a"/>
+</svg>
+
+<!-- Hibiscus flower left -->
+<svg class="bg-decor bg-flower-2" width="50" height="50" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="30" cy="18" rx="7" ry="12" fill="#f0a0c0" transform="rotate(0 30 30)"/>
+  <ellipse cx="30" cy="18" rx="7" ry="12" fill="#e890b0" transform="rotate(72 30 30)"/>
+  <ellipse cx="30" cy="18" rx="7" ry="12" fill="#f0a0c0" transform="rotate(144 30 30)"/>
+  <ellipse cx="30" cy="18" rx="7" ry="12" fill="#e890b0" transform="rotate(216 30 30)"/>
+  <ellipse cx="30" cy="18" rx="7" ry="12" fill="#f0a0c0" transform="rotate(288 30 30)"/>
+  <circle cx="30" cy="30" r="5" fill="#f4a942"/>
+  <circle cx="30" cy="30" r="2.5" fill="#e0872a"/>
+</svg>
+
+<!-- Coconut drink bottom right -->
+<svg class="bg-decor bg-coconut" width="55" height="65" viewBox="0 0 55 65" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="28" cy="42" rx="20" ry="18" fill="#6B3A1F"/>
+  <ellipse cx="28" cy="42" rx="18" ry="16" fill="#8B5E3C"/>
+  <path d="M10 38 Q28 32 46 38" fill="#f4e8d0" stroke="#d4c4a0" stroke-width="0.5"/>
+  <rect x="26" y="10" width="2" height="30" fill="#2d8a4a" rx="1"/>
+  <path d="M28 10 Q36 8 40 14 Q36 12 28 14" fill="#3d9a5a"/>
+  <path d="M28 10 Q20 8 16 14 Q20 12 28 14" fill="#2d8a4a"/>
+  <rect x="22" y="28" width="12" height="3" rx="1.5" fill="#f4a942" opacity="0.8"/>
+  <circle cx="18" cy="36" r="2.5" fill="#e05050"/>
+  <circle cx="38" cy="35" r="2" fill="#f4a942"/>
+</svg>
+
+<div class="app-content">
+
+<!-- HEADER -->
 <div class="app-header">
-  <svg class="tiki-logo" width="80" height="100" viewBox="0 0 80 100" xmlns="http://www.w3.org/2000/svg">
+  <svg class="tiki-logo" width="70" height="88" viewBox="0 0 80 100" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <!-- Wood grain gradient -->
       <linearGradient id="woodMain" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" stop-color="#6B3A1F"/>
         <stop offset="25%" stop-color="#8B5E3C"/>
@@ -466,89 +694,46 @@
         <stop offset="100%" stop-color="#6B3A1F"/>
       </linearGradient>
     </defs>
-
-    <!-- Tiki body / torso base -->
     <path d="M25 58 L25 88 Q25 94 32 94 L48 94 Q55 94 55 88 L55 58 Z" fill="url(#woodMain)" stroke="#4A2510" stroke-width="0.8"/>
-    <!-- Torso carving lines -->
     <path d="M32 62 L32 80" stroke="#4A2510" stroke-width="0.6" opacity="0.5"/>
     <path d="M40 60 L40 90" stroke="#4A2510" stroke-width="0.5" opacity="0.4"/>
     <path d="M48 62 L48 80" stroke="#4A2510" stroke-width="0.6" opacity="0.5"/>
-    <!-- Chest carving -->
     <path d="M33 65 Q40 70 47 65" fill="none" stroke="#4A2510" stroke-width="1" opacity="0.6"/>
-    <path d="M35 72 Q40 75 45 72" fill="none" stroke="#4A2510" stroke-width="0.8" opacity="0.5"/>
-
-    <!-- Head -->
     <path d="M22 10 Q22 4 30 3 L50 3 Q58 4 58 10 L58 50 Q58 56 50 57 L30 57 Q22 56 22 50 Z" fill="url(#woodMain)" stroke="#4A2510" stroke-width="1"/>
-
-    <!-- Brow ridge (heavy, traditional) -->
     <path d="M24 18 Q28 13 40 13 Q52 13 56 18 L56 24 Q52 20 40 20 Q28 20 24 24 Z" fill="url(#woodDark)"/>
-    <!-- Brow ridge carving detail -->
     <path d="M26 16 Q40 11 54 16" fill="none" stroke="#3A1A08" stroke-width="1.2"/>
-
-    <!-- Eye sockets (deep carved) -->
     <ellipse cx="33" cy="28" rx="5.5" ry="6" fill="#2A1508"/>
     <ellipse cx="47" cy="28" rx="5.5" ry="6" fill="#2A1508"/>
-    <!-- Eyes (glowing) -->
     <ellipse cx="33" cy="28" rx="3.5" ry="4" fill="#f4a942"/>
     <ellipse cx="47" cy="28" rx="3.5" ry="4" fill="#f4a942"/>
-    <!-- Eye inner glow -->
     <ellipse cx="33" cy="27" rx="1.8" ry="2" fill="#ffe080" opacity="0.6"/>
     <ellipse cx="47" cy="27" rx="1.8" ry="2" fill="#ffe080" opacity="0.6"/>
-
-    <!-- Nose (wide, carved) -->
     <path d="M37 30 L35 38 Q36 40 40 40 Q44 40 45 38 L43 30" fill="url(#woodDark)" stroke="#3A1A08" stroke-width="0.6"/>
-    <!-- Nostrils -->
     <circle cx="37" cy="38" r="1.5" fill="#2A1508"/>
     <circle cx="43" cy="38" r="1.5" fill="#2A1508"/>
-
-    <!-- Mouth (wide grimace with teeth) -->
     <path d="M28 44 Q30 42 40 42 Q50 42 52 44 L52 50 Q50 52 40 52 Q30 52 28 50 Z" fill="#2A1508" stroke="#3A1A08" stroke-width="0.8"/>
-    <!-- Teeth (blocky, carved style) -->
     <rect x="30" y="44" width="4" height="5" rx="0.5" fill="#e8dcc8" stroke="#c4b49a" stroke-width="0.3"/>
     <rect x="35" y="44" width="4" height="5" rx="0.5" fill="#e8dcc8" stroke="#c4b49a" stroke-width="0.3"/>
     <rect x="40" y="44" width="4" height="5" rx="0.5" fill="#e8dcc8" stroke="#c4b49a" stroke-width="0.3"/>
     <rect x="45" y="44" width="4" height="5" rx="0.5" fill="#e8dcc8" stroke="#c4b49a" stroke-width="0.3"/>
-    <!-- Lower teeth -->
     <rect x="32" y="48" width="3.5" height="3" rx="0.5" fill="#d4c8b0" stroke="#c4b49a" stroke-width="0.3"/>
     <rect x="37" y="48" width="3.5" height="3" rx="0.5" fill="#d4c8b0" stroke="#c4b49a" stroke-width="0.3"/>
     <rect x="42" y="48" width="3.5" height="3" rx="0.5" fill="#d4c8b0" stroke="#c4b49a" stroke-width="0.3"/>
-
-    <!-- Head carving lines (wood grain / tribal marks) -->
-    <path d="M26 8 Q30 6 34 8" fill="none" stroke="#4A2510" stroke-width="0.7" opacity="0.6"/>
-    <path d="M46 8 Q50 6 54 8" fill="none" stroke="#4A2510" stroke-width="0.7" opacity="0.6"/>
-    <path d="M24 35 L26 32" stroke="#4A2510" stroke-width="0.7" opacity="0.5"/>
-    <path d="M56 35 L54 32" stroke="#4A2510" stroke-width="0.7" opacity="0.5"/>
-
-    <!-- Ear carvings -->
     <path d="M22 25 Q19 30 22 35" fill="none" stroke="#4A2510" stroke-width="1.5"/>
     <path d="M58 25 Q61 30 58 35" fill="none" stroke="#4A2510" stroke-width="1.5"/>
-
-    <!-- LEFT ARM (hanging down) -->
     <path d="M25 60 Q20 62 18 70 Q16 78 18 82" fill="url(#armGrad)" stroke="#4A2510" stroke-width="0.8"/>
-    <!-- Left hand -->
     <circle cx="18" cy="83" r="3" fill="url(#woodLight)" stroke="#4A2510" stroke-width="0.6"/>
-
-    <!-- RIGHT ARM (curling up - bicep flexed) -->
-    <!-- Upper arm -->
     <path d="M55 60 Q62 58 65 52 Q67 48 65 42" fill="url(#armGrad)" stroke="#4A2510" stroke-width="0.8"/>
-    <!-- Bicep bulge -->
     <ellipse cx="63" cy="50" rx="4" ry="6" fill="url(#woodLight)" stroke="#4A2510" stroke-width="0.6" opacity="0.7"/>
-    <!-- Forearm -->
     <path d="M65 42 Q64 36 60 33 Q58 31 56 32" fill="url(#armGrad)" stroke="#4A2510" stroke-width="0.8"/>
-    <!-- Hand gripping bar -->
     <circle cx="57" cy="32" r="3" fill="url(#woodLight)" stroke="#4A2510" stroke-width="0.6"/>
-
-    <!-- DUMBBELL -->
-    <!-- Bar -->
     <rect x="48" y="31" width="18" height="2.5" rx="1.2" fill="#A0A0A0" stroke="#666" stroke-width="0.5"/>
-    <!-- Left plate -->
     <rect x="46" y="27" width="4" height="10" rx="1.5" fill="#555" stroke="#333" stroke-width="0.5"/>
     <rect x="44" y="28.5" width="3" height="7" rx="1" fill="#444" stroke="#333" stroke-width="0.4"/>
-    <!-- Right plate -->
     <rect x="64" y="27" width="4" height="10" rx="1.5" fill="#555" stroke="#333" stroke-width="0.5"/>
     <rect x="67" y="28.5" width="3" height="7" rx="1" fill="#444" stroke="#333" stroke-width="0.4"/>
   </svg>
-  <span class="app-title">Tiki Tracker</span>
+  <div class="app-title">KYLE FIT</div>
   <div class="app-subtitle">Island Gains</div>
 </div>
 
@@ -560,36 +745,36 @@
   </div>
 </div>
 
-<!-- PLAN VIEW -->
-<div class="plan-view active" id="planView"></div>
+<!-- HOME VIEW (Plans) -->
+<div class="view active" id="homeView"></div>
 
-<!-- DAY VIEW -->
-<div class="day-view" id="dayView">
-  <div class="day-header">
-    <button class="back-btn" id="backBtn">&#8592;</button>
-    <div class="day-title" id="dayTitle">Monday</div>
+<!-- PLAN VIEW (Days) -->
+<div class="view" id="planView">
+  <div class="nav-header">
+    <button class="back-btn" id="planBackBtn">&#8592;</button>
+    <div class="nav-title" id="planTitle">My Plan</div>
+  </div>
+  <div id="dayList"></div>
+</div>
+
+<!-- DAY VIEW (Exercises) -->
+<div class="view" id="dayView">
+  <div class="nav-header">
+    <button class="back-btn" id="dayBackBtn">&#8592;</button>
+    <div class="nav-title" id="dayTitle">Monday</div>
   </div>
   <input type="text" class="workout-name-input" id="workoutNameInput" placeholder="Workout name (e.g. Push Day)">
   <div id="exerciseList"></div>
-  <button class="add-exercise-btn" id="addExerciseBtn">+ Add Exercise</button>
+  <button class="add-btn" id="addExerciseBtn">+ Add Exercise</button>
 </div>
 
-<!-- EDIT MODAL -->
-<div class="modal-overlay" id="editModal">
+</div><!-- end .app-content -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
   <div class="modal">
-    <h3 id="modalTitle">Edit Exercise</h3>
-    <div class="modal-field">
-      <label>Exercise Name</label>
-      <input type="text" id="modalName" placeholder="e.g. Bicep Curl">
-    </div>
-    <div class="modal-field">
-      <label>Sets</label>
-      <input type="number" id="modalSets" value="3" min="1">
-    </div>
-    <div class="modal-field">
-      <label>Reps</label>
-      <input type="number" id="modalReps" value="12" min="1">
-    </div>
+    <h3 id="modalTitle">New</h3>
+    <div id="modalFields"></div>
     <div class="modal-buttons">
       <button class="modal-btn cancel" id="modalCancel">Cancel</button>
       <button class="modal-btn save" id="modalSave">Save</button>
@@ -600,19 +785,27 @@
 <script>
 // --- DATA MODEL ---
 const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-let plan = loadPlan();
+let plans = loadPlans();
 let unit = localStorage.getItem('wt_unit') || 'lbs';
-let currentDay = null;
+let currentPlanIdx = null;
+let currentDayIdx = null;
 let editingExerciseIdx = null;
+let modalMode = null; // 'plan', 'exercise', 'editExercise'
 
-function loadPlan() {
-  const saved = localStorage.getItem('wt_plan');
+function loadPlans() {
+  const saved = localStorage.getItem('wt_plans_v2');
   if (saved) return JSON.parse(saved);
-  return DAYS.map(d => ({ day: d, workoutName: '', exercises: [] }));
+  // Migrate from v1 if exists
+  const v1 = localStorage.getItem('wt_plan');
+  if (v1) {
+    const oldPlan = JSON.parse(v1);
+    return [{ name: 'My Workout Plan', days: oldPlan }];
+  }
+  return [];
 }
 
-function savePlan() {
-  localStorage.setItem('wt_plan', JSON.stringify(plan));
+function savePlans() {
+  localStorage.setItem('wt_plans_v2', JSON.stringify(plans));
 }
 
 // --- UNIT TOGGLE ---
@@ -624,14 +817,89 @@ document.querySelectorAll('.unit-btn').forEach(btn => {
     localStorage.setItem('wt_unit', unit);
     document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    if (currentDay !== null) renderDayView();
+    if (currentDayIdx !== null) renderDayView();
   });
 });
 
-// --- PLAN VIEW ---
+// --- VIEW MANAGEMENT ---
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// --- HOME VIEW (Plans list) ---
+function renderHomeView() {
+  currentPlanIdx = null;
+  currentDayIdx = null;
+  showView('homeView');
+  const container = document.getElementById('homeView');
+
+  const icons = ['&#127796;','&#127946;','&#128170;','&#127948;','&#9917;','&#127947;'];
+  container.innerHTML = plans.map((p, i) => {
+    const dayCount = p.days.filter(d => d.workoutName).length;
+    const totalEx = p.days.reduce((sum, d) => sum + d.exercises.length, 0);
+    const icon = icons[i % icons.length];
+    return `<div class="plan-card" data-idx="${i}">
+      <div class="plan-card-left">
+        <div class="plan-name">${p.name}</div>
+        <div class="plan-info">${dayCount} active days &middot; ${totalEx} exercises</div>
+      </div>
+      <div class="plan-card-right">
+        <span class="plan-card-icon">${icon}</span>
+        <div class="plan-actions">
+          <button class="edit-plan-btn" data-idx="${i}" title="Edit">&#9998;</button>
+          <button class="delete-plan-btn" data-idx="${i}" title="Delete">&times;</button>
+        </div>
+        <span class="plan-card-arrow">&#8250;</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  container.innerHTML += `<button class="add-btn add-plan-btn" id="addPlanBtn">+ New Workout Plan</button>`;
+
+  // Plan card click -> open plan
+  container.querySelectorAll('.plan-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.plan-actions')) return;
+      currentPlanIdx = parseInt(card.dataset.idx);
+      renderPlanView();
+    });
+  });
+
+  // Edit plan name
+  container.querySelectorAll('.edit-plan-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(btn.dataset.idx);
+      openPlanModal(idx);
+    });
+  });
+
+  // Delete plan
+  container.querySelectorAll('.delete-plan-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = parseInt(btn.dataset.idx);
+      if (confirm('Delete "' + plans[idx].name + '"? This cannot be undone.')) {
+        plans.splice(idx, 1);
+        savePlans();
+        renderHomeView();
+      }
+    });
+  });
+
+  // Add plan button
+  document.getElementById('addPlanBtn').addEventListener('click', () => openPlanModal(-1));
+}
+
+// --- PLAN VIEW (Days list) ---
 function renderPlanView() {
-  const container = document.getElementById('planView');
-  container.innerHTML = plan.map((day, i) => {
+  showView('planView');
+  const plan = plans[currentPlanIdx];
+  document.getElementById('planTitle').textContent = plan.name;
+
+  const container = document.getElementById('dayList');
+  container.innerHTML = plan.days.map((day, i) => {
     const name = day.workoutName || 'Rest Day';
     const count = day.exercises.length;
     const countText = count === 0 ? '' : count + ' exercise' + (count > 1 ? 's' : '');
@@ -649,40 +917,38 @@ function renderPlanView() {
 
   container.querySelectorAll('.day-card').forEach(card => {
     card.addEventListener('click', () => {
-      currentDay = parseInt(card.dataset.day);
-      showDayView();
+      currentDayIdx = parseInt(card.dataset.day);
+      renderDayView();
     });
   });
 }
 
-// --- DAY VIEW ---
-function showDayView() {
-  document.getElementById('planView').classList.remove('active');
-  document.getElementById('dayView').classList.add('active');
-  renderDayView();
-}
+document.getElementById('planBackBtn').addEventListener('click', renderHomeView);
 
-function showPlanView() {
-  document.getElementById('dayView').classList.remove('active');
-  document.getElementById('planView').classList.add('active');
-  currentDay = null;
-  renderPlanView();
-}
-
+// --- DAY VIEW (Exercises) ---
 function renderDayView() {
-  const day = plan[currentDay];
+  showView('dayView');
+  const day = plans[currentPlanIdx].days[currentDayIdx];
   document.getElementById('dayTitle').textContent = day.day;
   document.getElementById('workoutNameInput').value = day.workoutName;
   renderExercises();
 }
 
+document.getElementById('dayBackBtn').addEventListener('click', renderPlanView);
+
+document.getElementById('workoutNameInput').addEventListener('input', (e) => {
+  plans[currentPlanIdx].days[currentDayIdx].workoutName = e.target.value;
+  savePlans();
+});
+
 function renderExercises() {
-  const day = plan[currentDay];
+  const day = plans[currentPlanIdx].days[currentDayIdx];
   const container = document.getElementById('exerciseList');
+
   container.innerHTML = day.exercises.map((ex, i) => {
     const weekRows = ex.weeks.map((w, wi) => {
       return `<tr>
-        <td>Week ${wi + 1}</td>
+        <td>Wk ${wi + 1}</td>
         <td><input type="number" value="${w.sets}" min="1" data-ex="${i}" data-week="${wi}" data-field="sets"></td>
         <td><input type="number" value="${w.reps}" min="1" data-ex="${i}" data-week="${wi}" data-field="reps"></td>
         <td><input type="number" value="${w.weight || ''}" min="0" placeholder="—" data-ex="${i}" data-week="${wi}" data-field="weight"></td>
@@ -701,7 +967,7 @@ function renderExercises() {
       </div>
       <div class="exercise-body">
         <table class="week-table">
-          <thead><tr><th>Week</th><th>Sets</th><th>Reps</th><th>Weight (${unit})</th></tr></thead>
+          <thead><tr><th>Week</th><th>Sets</th><th>Reps</th><th>${unit}</th></tr></thead>
           <tbody>${weekRows}</tbody>
         </table>
         <button class="log-week-btn" data-idx="${i}">+ Log This Week</button>
@@ -713,47 +979,44 @@ function renderExercises() {
   container.querySelectorAll('.exercise-header').forEach(hdr => {
     hdr.addEventListener('click', (e) => {
       if (e.target.closest('.exercise-actions')) return;
-      const item = hdr.closest('.exercise-item');
-      item.classList.toggle('expanded');
+      hdr.closest('.exercise-item').classList.toggle('expanded');
     });
   });
 
-  // Edit buttons
+  // Edit
   container.querySelectorAll('.edit-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      openEditModal(parseInt(btn.dataset.idx));
+      openExerciseModal(parseInt(btn.dataset.idx));
     });
   });
 
-  // Delete buttons
+  // Delete
   container.querySelectorAll('.delete-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const idx = parseInt(btn.dataset.idx);
       if (confirm('Delete ' + day.exercises[idx].name + '?')) {
         day.exercises.splice(idx, 1);
-        savePlan();
+        savePlans();
         renderExercises();
       }
     });
   });
 
-  // Log week buttons
+  // Log week
   container.querySelectorAll('.log-week-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const idx = parseInt(btn.dataset.idx);
       const ex = day.exercises[idx];
       ex.weeks.push({ sets: ex.sets, reps: ex.reps, weight: '' });
-      savePlan();
+      savePlans();
       renderExercises();
-      // Auto-expand the exercise
-      const items = container.querySelectorAll('.exercise-item');
-      items[idx].classList.add('expanded');
+      container.querySelectorAll('.exercise-item')[idx].classList.add('expanded');
     });
   });
 
-  // Week data inputs
+  // Week inputs
   container.querySelectorAll('.week-table input').forEach(input => {
     input.addEventListener('change', () => {
       const exIdx = parseInt(input.dataset.ex);
@@ -761,84 +1024,99 @@ function renderExercises() {
       const field = input.dataset.field;
       const val = input.value === '' ? '' : parseFloat(input.value);
       day.exercises[exIdx].weeks[weekIdx][field] = val;
-      savePlan();
+      savePlans();
     });
   });
 }
 
-// --- WORKOUT NAME ---
-document.getElementById('workoutNameInput').addEventListener('input', (e) => {
-  plan[currentDay].workoutName = e.target.value;
-  savePlan();
-});
-
-// --- BACK BUTTON ---
-document.getElementById('backBtn').addEventListener('click', showPlanView);
-
 // --- ADD EXERCISE ---
-document.getElementById('addExerciseBtn').addEventListener('click', () => {
-  editingExerciseIdx = -1; // -1 means new
-  document.getElementById('modalTitle').textContent = 'New Exercise';
-  document.getElementById('modalName').value = '';
-  document.getElementById('modalSets').value = '3';
-  document.getElementById('modalReps').value = '12';
-  document.getElementById('editModal').classList.add('active');
-});
+document.getElementById('addExerciseBtn').addEventListener('click', () => openExerciseModal(-1));
 
-// --- EDIT MODAL ---
-function openEditModal(idx) {
-  const ex = plan[currentDay].exercises[idx];
+// --- MODAL LOGIC ---
+function openPlanModal(idx) {
+  modalMode = 'plan';
   editingExerciseIdx = idx;
-  document.getElementById('modalTitle').textContent = 'Edit Exercise';
-  document.getElementById('modalName').value = ex.name;
-  document.getElementById('modalSets').value = ex.sets;
-  document.getElementById('modalReps').value = ex.reps;
-  document.getElementById('editModal').classList.add('active');
+  const title = idx === -1 ? 'New Workout Plan' : 'Edit Plan Name';
+  const nameVal = idx === -1 ? '' : plans[idx].name;
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalFields').innerHTML = `
+    <div class="modal-field">
+      <label>Plan Name</label>
+      <input type="text" id="modalInput1" placeholder="e.g. Push Pull Legs" value="${nameVal}">
+    </div>`;
+  document.getElementById('modal').classList.add('active');
+  setTimeout(() => document.getElementById('modalInput1').focus(), 100);
+}
+
+function openExerciseModal(idx) {
+  modalMode = idx === -1 ? 'exercise' : 'editExercise';
+  editingExerciseIdx = idx;
+  const title = idx === -1 ? 'New Exercise' : 'Edit Exercise';
+  const ex = idx === -1 ? { name: '', sets: 3, reps: 12 } : plans[currentPlanIdx].days[currentDayIdx].exercises[idx];
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalFields').innerHTML = `
+    <div class="modal-field">
+      <label>Exercise Name</label>
+      <input type="text" id="modalInput1" placeholder="e.g. Bicep Curl" value="${ex.name}">
+    </div>
+    <div class="modal-field">
+      <label>Sets</label>
+      <input type="number" id="modalInput2" value="${ex.sets}" min="1">
+    </div>
+    <div class="modal-field">
+      <label>Reps</label>
+      <input type="number" id="modalInput3" value="${ex.reps}" min="1">
+    </div>`;
+  document.getElementById('modal').classList.add('active');
+  setTimeout(() => document.getElementById('modalInput1').focus(), 100);
 }
 
 document.getElementById('modalCancel').addEventListener('click', () => {
-  document.getElementById('editModal').classList.remove('active');
+  document.getElementById('modal').classList.remove('active');
 });
 
 document.getElementById('modalSave').addEventListener('click', () => {
-  const name = document.getElementById('modalName').value.trim();
-  const sets = parseInt(document.getElementById('modalSets').value) || 3;
-  const reps = parseInt(document.getElementById('modalReps').value) || 12;
-
-  if (!name) { alert('Enter an exercise name'); return; }
-
-  const day = plan[currentDay];
-
-  if (editingExerciseIdx === -1) {
-    // New exercise
-    day.exercises.push({
-      name: name,
-      sets: sets,
-      reps: reps,
-      weeks: [{ sets: sets, reps: reps, weight: '' }]
-    });
+  if (modalMode === 'plan') {
+    const name = document.getElementById('modalInput1').value.trim();
+    if (!name) { alert('Enter a plan name'); return; }
+    if (editingExerciseIdx === -1) {
+      plans.push({ name, days: DAYS.map(d => ({ day: d, workoutName: '', exercises: [] })) });
+    } else {
+      plans[editingExerciseIdx].name = name;
+    }
+    savePlans();
+    document.getElementById('modal').classList.remove('active');
+    renderHomeView();
   } else {
-    // Edit existing
-    const ex = day.exercises[editingExerciseIdx];
-    ex.name = name;
-    ex.sets = sets;
-    ex.reps = reps;
-  }
+    const name = document.getElementById('modalInput1').value.trim();
+    const sets = parseInt(document.getElementById('modalInput2').value) || 3;
+    const reps = parseInt(document.getElementById('modalInput3').value) || 12;
+    if (!name) { alert('Enter an exercise name'); return; }
 
-  savePlan();
-  document.getElementById('editModal').classList.remove('active');
-  renderExercises();
+    const day = plans[currentPlanIdx].days[currentDayIdx];
+    if (modalMode === 'exercise') {
+      day.exercises.push({ name, sets, reps, weeks: [{ sets, reps, weight: '' }] });
+    } else {
+      const ex = day.exercises[editingExerciseIdx];
+      ex.name = name;
+      ex.sets = sets;
+      ex.reps = reps;
+    }
+    savePlans();
+    document.getElementById('modal').classList.remove('active');
+    renderExercises();
+  }
 });
 
 // Close modal on overlay click
-document.getElementById('editModal').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('editModal')) {
-    document.getElementById('editModal').classList.remove('active');
+document.getElementById('modal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('active');
   }
 });
 
 // --- INIT ---
-renderPlanView();
+renderHomeView();
 
 // --- SERVICE WORKER ---
 if ('serviceWorker' in navigator) {

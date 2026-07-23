@@ -1,6 +1,6 @@
 {
-  "name": "Tiki Tracker - Workout Planner",
-  "short_name": "Tiki Tracker",
+  "name": "Kyle Fit - Workout Tracker",
+  "short_name": "Kyle Fit",
   "description": "Track your lifting workouts week by week with island vibes",
   "start_url": "./index.html",
   "display": "standalone",

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tiki-tracker-v1';
+const CACHE_NAME = 'kyle-fit-v2';
 const ASSETS = [
   './',
   './index.html',
