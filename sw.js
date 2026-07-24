@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kyle-fit-v2';
+const CACHE_NAME = 'kyle-fit-v3';
 const ASSETS = [
   './',
   './index.html',
